@@ -11,35 +11,73 @@ public class Queue {
     private int curIndex;
 
     public Queue(){
-        this.isFixedSize = false;
-        this.boxes = new ArrayList<>();
+        isFixedSize = false;
+        boxes = new ArrayList<>();
+        curIndex = -1;
     }
 
     public Queue(int maxSize){
-        this.isFixedSize = true;
-        this.maxSize = maxSize;
-        this.boxes = Arrays.asList(new Box[maxSize]);
-        this.curIndex = 0;
+        isFixedSize = true;
+        maxSize = maxSize;
+        boxes = Arrays.asList(new Box[maxSize]);
+        curIndex = -1;
     }
 
     public int getSize(){
-        return this.boxes.size();
+        return boxes.size();
     }
 
-    public void addElement(Box box){
-        if(!this.isFull()){
-            boxes.set(curIndex, box);
+    public int getCurIndex(){
+        return curIndex;
+    }
+
+    public Box getBoxOrNull(int index){
+        if(index <= curIndex) {
+            return boxes.get(index);
+        }
+
+        return null;
+    }
+
+    public void push(Box box){
+        if(!isFull() && isFixedSize == true){
             curIndex++;
+            boxes.set(curIndex, box);
+            System.out.println("box added: " + box);
+        } else if(!isFull() && isFixedSize == false){
+            curIndex++;
+            boxes.add(box);
+            System.out.println("box added: " + box);
+        }
+        else {
+            System.out.println("Element could not be added : queue is full!");
+        }
+    }
+
+    public void pop(){
+        if((isFixedSize == true && curIndex == -1) || (isFixedSize == false && boxes.size() == 0)){
+            System.out.println("Element could not be removed : queue is already empty!");
+        } else if(isFixedSize == true){
+            System.out.println("box removed: " + boxes.get(curIndex));
+            boxes.remove(curIndex);
+            curIndex--;
         } else {
-            System.out.println("Element could be added : array is full!");
+            System.out.println("box removed: " + boxes.get(curIndex));
+            boxes.remove(boxes.size() - 1);
+            curIndex--;
         }
     }
 
     public boolean isFull(){
-        return (isFixedSize == false) ? false : (curIndex < this.getSize() - 1 ? false : true);
+        return (isFixedSize == false) ? false : (curIndex < getSize() - 1 ? false : true);
     }
 
+    public boolean isEmpty(){
+        return curIndex < 0 ? true : false;
+    }
+
+    @Override
     public String toString(){
-        return super.toString() + " | maxsize: " + this.maxSize + " | current size: " + (this.curIndex + 1);
+        return super.toString() + " | maxsize: " + (isFixedSize ? maxSize : "unlimited") + " | current size: " + (curIndex + 1);
     }
 }

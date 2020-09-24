@@ -4,18 +4,18 @@ public class Box {
     private double length, width, height;
 
     public Box(double length, double width, double height){
-        this.length = length;
-        this.width = width;
-        this.height = height;
+        length = length;
+        width = width;
+        height = height;
     }
 
     // calculate properties
     public double calculateSurface(){
-        return 2 * this.length * this.width + 2 * this.width * this.height + 2 * this.length * this.height;
+        return 2 * length * width + 2 * width * height + 2 * length * height;
     }
 
     public double calculateVolume(){
-        return this.length * this.width * this.height;
+        return length * width * height;
     }
 
     // print properties
@@ -29,15 +29,15 @@ public class Box {
 
     // setters
     public void setLength(double length){
-        this.length = length;
+        length = length;
     }
 
     public void setWidth(double width){
-        this.width = width;
+        width = width;
     }
 
     public void setHeight(double height){
-        this.height = height;
+        height = height;
     }
 
     // getters
