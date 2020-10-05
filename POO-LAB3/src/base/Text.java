@@ -1,11 +1,13 @@
 package base;
 
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Text {
     private String text;
     private HashMap<String, Integer> wordFreq;
     private HashMap<String, Integer> wordLen;
+    private ArrayList<String> wordsSorted;
 
     public Text(String text){
         this.text = text;
@@ -22,7 +24,50 @@ public class Text {
     }
 
     public HashMap<String, Integer> getDictionary(){
-        return wordFreq;
+        return wordLen;
+    }
+
+    public void sortWordsAndSaveToArrayList(){
+        Set<String> words = wordLen.keySet();
+        List<String> wordsSorted = words.stream().collect(Collectors.toList());
+
+        Collections.sort(wordsSorted, Comparator.comparingInt(String::length));
+        Collections.reverse(wordsSorted);
+
+        this.wordsSorted = (ArrayList<String>) wordsSorted;
+    }
+
+    public String getLongestWord(){
+        sortWordsAndSaveToArrayList();
+
+        return wordsSorted.get(0);
+    }
+
+    public void printTopXLongestWords(int x){
+        if(x > wordsSorted.size()){
+            System.out.println("Only " + wordsSorted.size() + " words are available: ");
+
+            for(String s: wordsSorted)
+                System.out.println(s);
+        } else {
+            System.out.println("Top " + x + " longest words:");
+
+            for(int i = 0; i < x; i++)
+                System.out.println(wordsSorted.get(i));
+        }
+    }
+
+    public void printTopXPopularWords(int x){
+        Set<String> words = wordLen.keySet();
+        List<String> wordsSorted = words.stream().collect(Collectors.toList());
+
+        Collections.sort(wordsSorted, Comparator.comparingInt(s -> wordFreq.getOrDefault(s, 0)));
+
+        Collections.reverse(wordsSorted);
+
+        System.out.println("Top " + x + " most popular words:");
+        for(int i = 0; i < x; i++)
+            System.out.println(wordsSorted.get(i) + " " + wordFreq.get(wordsSorted.get(i)) + " times");
     }
 
     public void printWords(){
@@ -61,12 +106,17 @@ public class Text {
 
         return count;
     }
+
+    public int countWordOccurences(String word){
+        return wordFreq.getOrDefault(word, 0);
+    }
+
     public int countWords(){
         int count = 0;
         int curLen = 0;
         StringBuilder word = new StringBuilder("");
 
-        for(int i = 1; i < text.length(); i++){
+        for(int i = 0; i < text.length(); i++){
 
             if(Character.isLetter(text.charAt(i))){
                 word.append(text.charAt(i));
@@ -86,6 +136,13 @@ public class Text {
 
     public void addWord(String word){
         wordLen.putIfAbsent(word, word.length());
+        wordFreq.putIfAbsent(word, 0);
+        wordFreq.put(word, wordFreq.get(word) + 1);
+    }
+
+    public int getWordLength(String word){
+        //return wordLen.get(word);
+        return wordLen.getOrDefault(word, 0);
     }
 
     private boolean isVowel(Character letter) {
