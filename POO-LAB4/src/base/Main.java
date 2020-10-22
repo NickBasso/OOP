@@ -1,53 +1,44 @@
 package base;
 
 import java.lang.String;
-import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.util.Scanner;
-import java.io.File;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-	    File inputFile = new File("three_expressions.txt");
-	    Scanner scanner = new Scanner(inputFile);
+    public static void main(String[] args) throws Throwable {
+        String d = "1";
+        System.out.println(Double.parseDouble(d));
+        System.out.println(Double.parseDouble("1."));
+        System.out.println(Double.parseDouble("23.2132132131232132132132132121321312"));
+        System.out.println(Double.parseDouble(".321321321"));
+        //System.out.println(Double.parseDouble("1.0k"));
 
-	    StringBuilder input = new StringBuilder();
-	    ArrayList<String> expression = new ArrayList<>();
+        // get data from the input file
+        Input input = new Input("three_expressions.txt");
+        String data = input.returnInputFromFileAsString();
+        ArrayList<String> expression = input.returnExpressionArrayList();
 
-	    while(scanner.hasNextLine()){
-	        StringBuilder s = new StringBuilder(scanner.nextLine());
+        // print data from the file
+        System.out.println("All input expressions:\n" + data);
 
-            expression.add(s.toString());
-
-	        s.append("\n");
-            input.append(s);
+        // check parentheses correctness
+        System.out.println("Check all expressions for parentheses correctness:");
+        for(String s: expression) {
+            if(BracketsChecker.areBracketsCorrect(s) == true)
+                System.out.println("<" + s + "> -> brackets are correct.");
+            else
+                System.out.println("<" + s + "> -> brackets are wrong!");
         }
 
-        System.out.println("All input expressions:\n" + input);
+        // minify expressions by removing whitespaces and expression index number
+        for(int i = 0; i < expression.size(); i++)
+            expression.set(i, ExpressionMinifier.returnMinifiedExpression(expression.get(i)));
 
-        System.out.println("Check all expressions for parantheses correctness:");
-	    for(String s: expression)
-	        Main.checkParentheses(s);
-    }
-
-    private static void checkParentheses(String expression){
-        int parenthesesBalance = 0;
-
-        int i = 0 ;
-        for(; i < expression.length(); i++){
-            if(expression.charAt(i) == '(')
-                parenthesesBalance++;
-            else if(expression.charAt(i) == ')' && parenthesesBalance < 1)
-                break;
-            else if(expression.charAt(i) == ')')
-                parenthesesBalance--;
+        for(String s: expression){
+            SolveExpressionIfLegal result = new SolveExpressionIfLegal(s);
+            System.out.println(s + " = " + result.solveExpression());
         }
 
-        if(i == expression.length() && parenthesesBalance == 0)
-            System.out.println(expression + " " + " -> parentheses are correct.");
-        else
-            System.out.println(expression + " " + " -> parentheses are wrong!");
     }
 }
