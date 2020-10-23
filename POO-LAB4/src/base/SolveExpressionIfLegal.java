@@ -13,8 +13,10 @@ public class SolveExpressionIfLegal {
 
         priority = new int[255];
 
+
+
         for(int i = 0; i < 10; i++)
-            priority[i] = -1;
+            priority[i + '0'] = 5;
 
         priority['+'] = priority['-'] = 0;
         priority['*'] = priority['/'] = 1;
@@ -36,7 +38,8 @@ public class SolveExpressionIfLegal {
             throw (Throwable) Error;
     }
 
-    private static double calculatePart(String part){
+    private static double calculatePart(String part) throws NumberFormatException{
+        System.out.println("part: " + part);
         int highestPriorityIndex = 0;
         int highestPriorityLevel = priority[part.charAt(0)];
         char highestPriorityCharacter = part.charAt(0);
@@ -46,15 +49,23 @@ public class SolveExpressionIfLegal {
         for(int i = 0; i < part.length(); i++){
             char c = part.charAt(i);
 
-            if(priority[c] > highestPriorityLevel){
+            if(priority[c] < highestPriorityLevel){
                 highestPriorityIndex = i;
                 highestPriorityLevel = priority[c];
                 highestPriorityCharacter = c;
             }
         }
 
-        if(isDigit(highestPriorityCharacter) == true)
-            return Double.parseDouble(expression);
+        System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + " " + highestPriorityLevel);
+
+        if(isDigit(highestPriorityCharacter) == true){
+            try {
+                return Double.parseDouble(part);
+            } catch (Exception exception){
+                System.out.println(part + "\nParse double from String exception | " + exception);
+            }
+        }
+
 
         char ch = highestPriorityCharacter;
         if(ch == '(' || ch == '[' || ch == '{'){
@@ -76,43 +87,43 @@ public class SolveExpressionIfLegal {
                 i++;
             }*/
 
-            int i = expression.length() - 1;
-            while(i > 0 && doBracketsMatch(expression.charAt(i), ch) == false)
+            int i = part.length() - 1;
+            while(i > 0 && doBracketsMatch(part.charAt(i), ch) == false)
                 i--;
 
 
-            System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + "\n" +  expression);
-            return calculatePart(expression.substring(highestPriorityIndex + 1, i));
+            //System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + "\n" +  part);
+            return calculatePart(part.substring(highestPriorityIndex + 1, i));
         }
 
         switch(highestPriorityCharacter){
             case '+' :
                 return
-                        Double.parseDouble(expression.substring(0, highestPriorityIndex))
+                        calculatePart(part.substring(0, highestPriorityIndex))
                         +
-                        Double.parseDouble(expression.substring(highestPriorityIndex + 1, expression.length()));
+                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
 
             case '-' :
                 return
-                        Double.parseDouble(expression.substring(0, highestPriorityIndex))
+                        calculatePart(part.substring(0, highestPriorityIndex))
                         -
-                        Double.parseDouble(expression.substring(highestPriorityIndex + 1, expression.length()));
+                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
 
             case '*' :
                 return
-                        Double.parseDouble(expression.substring(0, highestPriorityIndex))
+                        calculatePart(part.substring(0, highestPriorityIndex))
                         *
-                        Double.parseDouble(expression.substring(highestPriorityIndex + 1, expression.length()));
+                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
 
             case '/' :
                 return
-                        Double.parseDouble(expression.substring(0, highestPriorityIndex))
+                        calculatePart(part.substring(0, highestPriorityIndex))
                         /
-                        Double.parseDouble(expression.substring(highestPriorityIndex + 1, expression.length()));
+                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
 
             default:
                 return
-                        Double.parseDouble(expression);
+                        Double.parseDouble(part);
         }
     }
 
