@@ -5,12 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Input {
+ class Input {
     private String directory;
     private StringBuilder input;
     private ArrayList<String> expression;
 
-    public Input(String directory) throws FileNotFoundException {
+     Input(String directory) throws FileNotFoundException {
         this.directory = directory;
         input = new StringBuilder();
         expression = new ArrayList<>();
@@ -32,11 +32,11 @@ public class Input {
         }
     }
 
-    public String returnInputFromFileAsString(){
+     String returnInputFromFileAsString(){
         return input.toString();
     }
 
-    public ArrayList<String> returnExpressionArrayList(){
+     ArrayList<String> returnExpressionArrayList(){
         return expression;
     }
 }

@@ -1,7 +1,7 @@
 package base;
 
-public class ExpressionMinifier {
-    public static String returnMinifiedExpression(String expression){
+ class ExpressionMinifier {
+     static String returnMinifiedExpression(String expression){
         StringBuilder sb = new StringBuilder();
 
         // find the expression index position ending
@@ -14,7 +14,7 @@ public class ExpressionMinifier {
             if it was a number, consider that expression itself
             starts from the very beginning of the string.
          */
-        if(i == expression.length() || expression.charAt(i) == ' ')
+        if(i == expression.length() || expression.charAt(i) == ' ' || isIntegerNumber(expression.substring(0, i)) == false)
             i = 0;
         else
             i++;
@@ -29,5 +29,16 @@ public class ExpressionMinifier {
         System.out.println(sb);
 
         return sb.toString();
+    }
+
+     static boolean isIntegerNumber(String expression) {
+        for(int i = 0; i < expression.length(); i++){
+            Character c = expression.charAt(i);
+
+            if(!"0123456789".contains(c.toString()))
+                return false;
+        }
+
+        return true;
     }
 }

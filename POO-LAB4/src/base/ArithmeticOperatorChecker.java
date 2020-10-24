@@ -1,7 +1,9 @@
 package base;
 
-public class ArithmeticOperatorChecker {
-    public static boolean areOperatorsCorrect(String expression) throws Exception {
+ class ArithmeticOperatorChecker {
+     static boolean areOperatorsCorrect(String expression) {
+        if(expression.length() == 0)
+            return false;
         if(isArithmeticOperator(expression.charAt(0)))
             return false;
 
@@ -22,15 +24,15 @@ public class ArithmeticOperatorChecker {
         return true;
     }
 
-    public static boolean isArithmeticOperator(Character c){
-        return "+-*/".contains(c.toString());
+     static boolean isArithmeticOperator(Character c){
+        return "+-*/^".contains(c.toString());
     }
 
-    public static boolean isPreviousCharacterValid(Character c){
-        return "0123456789()[]{}".contains(c.toString());
+     static boolean isPreviousCharacterValid(Character c){
+        return "0123456789()sincotar".contains(c.toString());
     }
 
-    public  static boolean isNextCharacterValid(Character c){
-        return "0123456789()[]{}".contains(c.toString());
+      static boolean isNextCharacterValid(Character c){
+        return "0123456789()sincotar".contains(c.toString());
     }
 }

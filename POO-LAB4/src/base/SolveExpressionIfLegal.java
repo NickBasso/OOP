@@ -2,171 +2,156 @@ package base;
 
 import java.util.Stack;
 
-public class SolveExpressionIfLegal {
+import static java.lang.StrictMath.*;
+
+ class SolveExpressionIfLegal {
     private static char[] chars;
     private static int[] priority;
     private static String expression;
     private static Object Error;
 
-    public SolveExpressionIfLegal(String expression){
+     SolveExpressionIfLegal(String expression){
         this.expression = expression;
 
         priority = new int[255];
 
-
-
         for(int i = 0; i < 10; i++)
-            priority[i + '0'] = 5;
+            priority[i + '0'] = 0;
 
-        priority['+'] = priority['-'] = 0;
-        priority['*'] = priority['/'] = 1;
-        priority['{'] = priority['}'] = 2;
-        priority['['] = priority[']'] = 3;
-        priority['('] = priority[')'] = 4;
+        priority['('] = 1;
+        priority['*'] = priority['/'] = priority['^'] = 2;
+        priority['+'] = priority['-'] = 3;
     }
 
-    public static boolean isExpressionLegal() throws Exception {
+     boolean isExpressionLegal() throws Exception {
         return  LegalCharacterChecker.areCharactersLegal(expression) &&
                 BracketsChecker.areBracketsCorrect(expression) &&
                 ArithmeticOperatorChecker.areOperatorsCorrect(expression);
     }
 
-    public static double solveExpression() throws Throwable {
-        if(isExpressionLegal() == true)
-            return calculatePart(expression);
-        else
-            throw (Throwable) Error;
+     double solveExpression() throws Throwable {
+        return calculatePart(expression);
     }
 
-    private static double calculatePart(String part) throws NumberFormatException{
-        System.out.println("part: " + part);
+    private static double calculatePart(String part){
+        //System.out.println(part);
+
+        if(part.length() == 0)
+            return 0;
+
         int highestPriorityIndex = 0;
         int highestPriorityLevel = priority[part.charAt(0)];
         char highestPriorityCharacter = part.charAt(0);
 
-        int[] matchingBracketIndex = new int[512];
-
+        int balance = 0;
         for(int i = 0; i < part.length(); i++){
             char c = part.charAt(i);
 
-            if(priority[c] < highestPriorityLevel){
+            if(c == '(')
+                balance++;
+            else if(c == ')')
+                balance--;
+
+            if(balance == 0 && priority[c] >= highestPriorityLevel){
                 highestPriorityIndex = i;
                 highestPriorityLevel = priority[c];
                 highestPriorityCharacter = c;
             }
         }
 
-        System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + " " + highestPriorityLevel);
+        //System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + " " + highestPriorityLevel);
 
-        if(isDigit(highestPriorityCharacter) == true){
-            try {
-                return Double.parseDouble(part);
-            } catch (Exception exception){
-                System.out.println(part + "\nParse double from String exception | " + exception);
-            }
-        }
-
-
-        char ch = highestPriorityCharacter;
-        if(ch == '(' || ch == '[' || ch == '{'){
-            /*Stack<Character> brackets = new Stack<Character>();
-            brackets.push(expression.charAt(highestPriorityIndex));
-
-            int i = 0;
-            while(!brackets.empty() && i < expression.length()){
-                Character c = expression.charAt(i);
-
-                if(isBracket(c)){
-                    if(isOpeningBracket(c) == true)
-                        brackets.push(c);
-                    else if(isClosingBracket(c) && brackets.size() > 0 && doBracketsMatch(c, brackets.peek())
-                            == true)
-                        brackets.pop();
-                }
-
-                i++;
-            }*/
-
-            int i = part.length() - 1;
-            while(i > 0 && doBracketsMatch(part.charAt(i), ch) == false)
-                i--;
-
-
-            //System.out.println(highestPriorityIndex + " " + highestPriorityCharacter + "\n" +  part);
-            return calculatePart(part.substring(highestPriorityIndex + 1, i));
-        }
-
+        String rightPart = part.substring(highestPriorityIndex + 1, part.length());
         switch(highestPriorityCharacter){
             case '+' :
                 return
                         calculatePart(part.substring(0, highestPriorityIndex))
                         +
-                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
+                        calculatePart(rightPart);
 
             case '-' :
                 return
                         calculatePart(part.substring(0, highestPriorityIndex))
                         -
-                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
+                        calculatePart(rightPart);
 
             case '*' :
                 return
                         calculatePart(part.substring(0, highestPriorityIndex))
                         *
-                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
+                        calculatePart(rightPart);
 
             case '/' :
                 return
                         calculatePart(part.substring(0, highestPriorityIndex))
                         /
-                        calculatePart(part.substring(highestPriorityIndex + 1, part.length()));
+                        calculatePart(rightPart);
 
-            default:
+            case '^' :
                 return
-                        Double.parseDouble(part);
+                        pow(calculatePart(part.substring(0, highestPriorityIndex)),
+                            (int)calculatePart(rightPart));
         }
+
+        if(highestPriorityCharacter == '('){
+            return calculatePart(part.substring(1, part.length() - 1));
+        }
+
+        else if(isAlgebraicFunction(part)){
+            return calculateAlgebraicExpression(part);
+        }
+
+        else if(isDigit(highestPriorityCharacter) == true){
+                return Double.parseDouble(part);
+        }
+
+        // obviously should not happen
+        return -666666666;
     }
 
-    private static char matchingClosingBracket(char c) {
-        String brackets = "()[]{}";
-
-        for(int i = 0; i < brackets.length(); i++)
-            if(c == brackets.charAt(i))
-                return
-                    brackets.charAt(i + 1);
-
-        return 1;
-    }
-
-    public static boolean isDigit(char c){
+     static boolean isDigit(char c){
         Character ch = c;
         return "0123456789".contains(ch.toString());
     }
 
-    public static boolean isBracket(Character c){
-        return "([{)]}".contains(c.toString());
+     static boolean isAlgebraicFunction(String s){
+        if(s.charAt(0) == 's' && s.charAt(1) == 'q' && s.charAt(2) == 'r' && s.charAt(3) == 't'){
+            return true;
+        }
+        if(s.charAt(0) == 's' && s.charAt(1) == 'i' && s.charAt(2) == 'n'){
+            return true;
+        }
+        else if(s.charAt(0) == 'c' && s.charAt(1) == 'o' && s.charAt(2) == 's'){
+            return true;
+        }
+        else if(s.charAt(0) == 't' && s.charAt(1) == 'a' && s.charAt(2) == 'n'){
+            return true;
+        }
+        else if(s.charAt(0) == 'c' && s.charAt(1) == 'o' && s.charAt(2) == 't'){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
-    public static boolean isOpeningBracket(Character c){
-        if(c.equals('(') || c.equals('[') || c.equals('{'))
-            return true;
+     static double calculateAlgebraicExpression(String s){
+        if(s.charAt(0) == 's' && s.charAt(1) == 'q' && s.charAt(2) == 'r' && s.charAt(3) == 't'){
+            return sqrt(calculatePart(s.substring(4)));
+        }
+        if(s.charAt(0) == 's' && s.charAt(1) == 'i' && s.charAt(2) == 'n'){
+            return sin(calculatePart(s.substring(3)));
+        }
+        else if(s.charAt(0) == 'c' && s.charAt(1) == 'o' && s.charAt(2) == 's'){
+            return cos(calculatePart(s.substring(3)));
+        }
+        else if(s.charAt(0) == 't' && s.charAt(1) == 'a' && s.charAt(2) == 'n'){
+            return tan(calculatePart(s.substring(3)));
+        }
+        else if(s.charAt(0) == 'c' && s.charAt(1) == 'o' && s.charAt(2) == 't'){
+            return cos(calculatePart(s.substring(3))) / sin(calculatePart(s.substring(3)));
+        }
 
-        return false;
-    }
-
-    public static boolean isClosingBracket(Character c){
-        if(c.equals(')') || c.equals(']') || c.equals('}'))
-            return true;
-
-        return false;
-    }
-
-    public static boolean doBracketsMatch(Character a, Character b){
-        if( a.equals(')') && b.equals('(') ||
-                a.equals(']') && b.equals('[') ||
-                a.equals('}') && b.equals('{') )
-            return true;
-
-        return false;
+        return 0;
     }
 }
