@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="401.0" prefWidth="741.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <Button fx:id="calculateButton" layoutX="142.0" layoutY="219.0" mnemonicParsing="false" onAction="#calculateDivision" text="Calculate" />
+      <TextField fx:id="dividend" layoutX="100.0" layoutY="124.0" />
+      <TextField fx:id="divisor" layoutX="100.0" layoutY="172.0" onKeyTyped="#isUnluckyNumber" />
+      <TextArea fx:id="result" editable="false" layoutX="100.0" layoutY="261.0" prefHeight="0.0" prefWidth="149.0" />
+      <TextArea fx:id="messageTextArea" editable="false" layoutX="300.0" layoutY="124.0" prefHeight="177.0" prefWidth="200.0" />
+      <Label layoutX="36.0" layoutY="127.0" text="Dividend:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="37.0" layoutY="175.0" text="Divider:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="37.0" layoutY="269.0" text="Quotient:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="344.0" layoutY="94.0" text="Message box:">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Button fx:id="resetAllButton" layoutX="544.0" layoutY="200.0" mnemonicParsing="false" onAction="#resetAppStateToInitial" text="Reset Input/Output" />
+   </children>
+</Pane>
